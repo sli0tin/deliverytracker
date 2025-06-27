@@ -94,11 +94,24 @@
     });
 
     function addAgent() {
-      const n = name.value, p = phone.value, u = username.value, w = password.value;
-      if (!n || !p || !u || !w) return alert("يرجى تعبئة كل الحقول");
+      const n = document.getElementById("name").value.trim();
+      const p = document.getElementById("phone").value.trim();
+      const u = document.getElementById("username").value.trim();
+      const w = document.getElementById("password").value.trim();
+
+      if (!n || !p || !u || !w) {
+        alert("يرجى تعبئة كل الحقول");
+        return;
+      }
+
       const id = db.push().key;
       db.child(id).set({ name: n, phone: p, username: u, password: w, status: 3 });
-      name.value = phone.value = username.value = password.value = "";
+
+      // تفريغ الحقول بعد الإضافة
+      document.getElementById("name").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
     }
 
     function edit(id) {
