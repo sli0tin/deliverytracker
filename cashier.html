@@ -4,13 +4,8 @@
   <meta charset="UTF-8" />
   <title>لوحة الكاشير</title>
   <style>
-    body { font-family: Arial; padding: 20px; background: #f4f4f4; text-align: center; }
-    img { max-width: 200px; margin-bottom: 20px; }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      font-size: 16px;
-    }
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    img.logo { max-width: 200px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -21,24 +16,24 @@
       padding: 10px;
       text-align: center;
     }
-    .st0 { background: #c8f7c5; }
-    .st1 { background: #f7f7c5; }
-    .st2 { background: #c5d9f7; }
-    .st3 { background: #f7c5c5; }
+
+    /* ألوان حسب الحالة */
+    .st0 { background: #c8f7c5; }   /* جاهز وقريب */
+    .st1 { background: #e0f7c8; }   /* جاهز وبعيد */
+    .st2 { background: #ffe0b2; }   /* يوصل */
+    .st3 { background: #f7c5c5; }   /* مشغول */
   </style>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" style="max-width: 200px; margin-bottom: 20px;" />
-  <h2>لوحة تحكم الكاشير</h2>
+  <!-- شعار الشركة -->
+  <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" />
 
-  <input id="name" placeholder="اسم المندوب" />
-  <input id="phone" placeholder="رقم المندوب" />
-  <input id="username" placeholder="رقم اليوزر" />
-  <button onclick="addAgent()">إضافة</button>
+  <h2 style="text-align:center;">لوحة تحكم الكاشير</h2>
 
   <table>
     <thead>
@@ -47,8 +42,6 @@
         <th>رقم الهاتف</th>
         <th>الحالة</th>
         <th>اتصال</th>
-        <th>تعديل</th>
-        <th>حذف</th>
       </tr>
     </thead>
     <tbody id="tbl"></tbody>
@@ -67,6 +60,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database().ref("agents");
+
     const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول"];
 
     db.on("value", snap => {
@@ -75,7 +69,7 @@
       tbl.innerHTML = "";
 
       const agents = Object.entries(data).map(([id, a]) => ({ id, ...a }));
-      agents.sort((a, b) => a.status - b.status);
+      agents.sort((a, b) => a.status - b.status); // ترتيب حسب الحالة
 
       for (const agent of agents) {
         const row = document.createElement("tr");
@@ -85,39 +79,10 @@
           <td>${agent.phone}</td>
           <td>${statuses[agent.status]}</td>
           <td><a href="tel:965${agent.phone}">📞</a></td>
-          <td><button onclick="edit('${agent.id}')">✏️</button></td>
-          <td><button onclick="remove('${agent.id}')">🗑️</button></td>
         `;
         tbl.appendChild(row);
       }
     });
-
-    function addAgent() {
-      const n = document.getElementById("name").value.trim();
-      const p = document.getElementById("phone").value.trim();
-      const u = document.getElementById("username").value.trim();
-
-      if (!n || !p || !u) {
-        alert("يرجى تعبئة كل الحقول");
-        return;
-      }
-
-      const id = db.push().key;
-      db.child(id).set({ name: n, phone: p, username: u, status: 3 });
-
-      document.getElementById("name").value = "";
-      document.getElementById("phone").value = "";
-      document.getElementById("username").value = "";
-    }
-
-    function edit(id) {
-      const newName = prompt("أدخل الاسم الجديد:");
-      if (newName) db.child(id).update({ name: newName });
-    }
-
-    function remove(id) {
-      if (confirm("هل أنت متأكد من الحذف؟")) db.child(id).remove();
-    }
   </script>
 
 </body>
