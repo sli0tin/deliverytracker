@@ -5,6 +5,7 @@
   <title>تحديث حالة المندوب</title>
   <style>
     body { font-family: Arial; padding: 30px; text-align: center; background: #f9f9f9; }
+    img { max-width: 200px; margin-bottom: 20px; }
     input, select {
       font-size: 18px;
       padding: 10px;
@@ -14,23 +15,23 @@
     #statusArea { display: none; margin-top: 30px; }
   </style>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" style="max-width: 200px; margin-bottom: 20px;" />
   <h2>تسجيل دخول المندوب</h2>
 
   <div id="loginArea">
     <input id="user" placeholder="رقم اليوزر" />
-    <input id="pass" type="password" placeholder="كلمة المرور" />
     <br />
     <button onclick="login()">دخول</button>
   </div>
 
   <div id="statusArea">
-    <h3>اختر حالتك</h3>
+    <h3 id="agentName"></h3>
+    <p>اختر حالتك</p>
     <select id="st" onchange="updateStatus()">
       <option value="0">جاهز وقريب</option>
       <option value="1">جاهز وبعيد</option>
@@ -57,16 +58,15 @@
 
     function login() {
       const u = user.value.trim();
-      const p = pass.value.trim();
 
       db.once("value").then(snap => {
         const data = snap.val() || {};
         const found = Object.entries(data).find(([id, val]) =>
-          val.username === u && val.password === p
+          val.username === u
         );
 
         if (!found) {
-          alert("بيانات الدخول غير صحيحة");
+          alert("رقم اليوزر غير صحيح");
           return;
         }
 
@@ -74,7 +74,8 @@
         currentAgentId = id;
         st.value = val.status || 3;
 
-        // إخفاء منطقة تسجيل الدخول وإظهار منطقة الحالة
+        agentName.innerText = "مرحبًا، " + val.name;
+
         loginArea.style.display = "none";
         statusArea.style.display = "block";
       });
