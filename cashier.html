@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة الكاشير</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    .st0 { background: #c8f7c5; } /* جاهز وقريب */
+    .st1 { background: #f7f7c5; } /* جاهز وبعيد */
+    .st2 { background: #c5d9f7; } /* يوصل طلبات */
+    .st3 { background: #f7c5c5; } /* مشغول */
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+</head>
+<body>
+
+  <h2>لوحة تحكم الكاشير</h2>
+
+  <input id="name" placeholder="اسم المندوب" />
+  <input id="phone" placeholder="رقم المندوب" />
+  <input id="username" placeholder="رقم اليوزر" />
+  <input id="password" placeholder="الباسوورد" />
+  <button onclick="addAgent()">إضافة</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>الاسم</th>
+        <th>رقم الهاتف</th>
+        <th>الحالة</th>
+        <th>اتصال</th>
+        <th>تعديل</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody id="tbl"></tbody>
+  </table>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAqHm_g9FO0uDIlj6P_k5KZ-mgDUGHXGc",
+      authDomain: "deliverytracker-18897.firebaseapp.com",
+      databaseURL: "https://deliverytracker-18897.firebaseio.com",
+      projectId: "deliverytracker-18897",
+      storageBucket: "deliverytracker-18897.appspot.com",
+      messagingSenderId: "1073554045758",
+      appId: "1:1073554045758:web:c5e58d19c7fdb4665e8a6f",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database().ref("agents");
+    const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول"];
+
+    db.on("value", snap => {
+      const data = snap.val() || {};
+      const tbl = document.getElementById("tbl");
+      tbl.innerHTML = "";
+
+      const agents = Object.entries(data).map(([id, a]) => ({ id, ...a }));
+      agents.sort((a, b) => a.status - b.status);
+
+      for (const agent of agents) {
+        const row = document.createElement("tr");
+        row.className = "st" + agent.status;
+        row.innerHTML = `
+          <td>${agent.name}</td>
+          <td>${agent.phone}</td>
+          <td>${statuses[agent.status]}</td>
+          <td><a href="tel:965${agent.phone}">📞</a></td>
+          <td><button onclick="edit('${agent.id}')">✏️</button></td>
+          <td><button onclick="remove('${agent.id}')">🗑️</button></td>
+        `;
+        tbl.appendChild(row);
+      }
+    });
+
+    function addAgent() {
+      const n = name.value, p = phone.value, u = username.value, w = password.value;
+      if (!n || !p || !u || !w) return alert("يرجى تعبئة كل الحقول");
+      const id = db.push().key;
+      db.child(id).set({ name: n, phone: p, username: u, password: w, status: 3 });
+      name.value = phone.value = username.value = password.value = "";
+    }
+
+    function edit(id) {
+      const newName = prompt("أدخل الاسم الجديد:");
+      if (newName) db.child(id).update({ name: newName });
+    }
+
+    function remove(id) {
+      if (confirm("هل أنت متأكد من الحذف؟")) db.child(id).remove();
+    }
+  </script>
+
+</body>
+</html>
