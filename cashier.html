@@ -56,6 +56,7 @@
     .st1 { background-color: #e0f7c8 !important; }
     .st2 { background-color: #ffe0b2 !important; }
     .st3 { background-color: #f7c5c5 !important; }
+    .st4 { background-color: #a3c4f3 !important; } /* أزرق فاتح */
 
     /* -------- الجوال -------- */
     .card {
@@ -138,7 +139,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database().ref("agents");
 
-    const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول"];
+    const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول", "أنا في المخبز"];
     const tbl = document.getElementById("tbl");
     const cards = document.getElementById("cards");
 
