@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       padding: 20px;
       background: #f4f4f4;
+      position: relative;
     }
 
     img.logo {
@@ -24,11 +25,31 @@
       color: #333;
     }
 
+    /* زر تعيين جميع المناديب مشغول */
+    #setBusyBtn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #f44336; /* أحمر */
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    #setBusyBtn:hover {
+      background-color: #d32f2f;
+    }
+
     /* -------- سطح المكتب -------- */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 60px; /* مسافة من الأعلى بسبب الزر */
       font-size: 16px;
     }
 
@@ -109,6 +130,9 @@
   <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" />
   <h2>قائمة المناديب الجاهزة للتوصيل:</h2>
 
+  <!-- زر تغيير الحالة -->
+  <button id="setBusyBtn" title="اجعل كل المناديب مشغولين">اجعل الجميع مشغول</button>
+
   <!-- جدول للكمبيوتر -->
   <table>
     <thead>
@@ -148,7 +172,9 @@
     ];
     const tbl = document.getElementById("tbl");
     const cards = document.getElementById("cards");
+    const setBusyBtn = document.getElementById("setBusyBtn");
 
+    // تحميل وعرض البيانات
     db.on("value", snap => {
       const data = snap.val() || {};
       tbl.innerHTML = "";
@@ -178,6 +204,29 @@
         `;
         cards.appendChild(card);
       }
+    });
+
+    // زر لجعل كل المناديب مشغولين
+    setBusyBtn.addEventListener("click", () => {
+      if (!confirm("هل أنت متأكد أنك تريد جعل كل المناديب في حالة 'مشغول'؟")) return;
+
+      db.once("value").then(snap => {
+        const data = snap.val() || {};
+
+        // تحديث جميع المناديب
+        const updates = {};
+        Object.keys(data).forEach(id => {
+          updates[id + "/status"] = 4;  // 4 = مشغول
+        });
+
+        db.update(updates)
+          .then(() => {
+            alert("تم تحديث حالة جميع المناديب إلى 'مشغول'.");
+          })
+          .catch(err => {
+            alert("حدث خطأ أثناء التحديث: " + err.message);
+          });
+      });
     });
   </script>
 
