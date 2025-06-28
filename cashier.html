@@ -52,11 +52,11 @@
       display: inline-block;
     }
 
-    .st0 { background-color: #c8f7c5 !important; }
-    .st1 { background-color: #e0f7c8 !important; }
-    .st2 { background-color: #ffe0b2 !important; }
-    .st3 { background-color: #f7c5c5 !important; }
-    .st4 { background-color: #a3c4f3 !important; } /* أزرق فاتح */
+    .st0 { background-color: #a3c4f3 !important; } /* أزرق - أنا في المخبز */
+    .st1 { background-color: #c39bd3 !important; } /* بنفسجي - أنا في الطريق للمخبز */
+    .st2 { background-color: #c8f7c5 !important; } /* أخضر فاتح - جاهز وقريب */
+    .st3 { background-color: #e0f7c8 !important; } /* أخضر باهت - جاهز بعيد */
+    .st4 { background-color: #f7c5c5 !important; } /* أحمر - مشغول */
 
     /* -------- الجوال -------- */
     .card {
@@ -139,7 +139,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database().ref("agents");
 
-    const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول", "أنا في المخبز"];
+    const statuses = [
+      "أنا في المخبز",
+      "أنا في الطريق للمخبز",
+      "جاهز وقريب",
+      "جاهز وبعيد",
+      "مشغول"
+    ];
     const tbl = document.getElementById("tbl");
     const cards = document.getElementById("cards");
 
@@ -149,10 +155,10 @@
       cards.innerHTML = "";
 
       const agents = Object.entries(data).map(([id, a]) => ({ id, ...a }));
+      // ترتيب حسب قيمة الحالة من 0 إلى 4 (الأولوية حسب المطلوب)
       agents.sort((a, b) => a.status - b.status);
 
       for (const agent of agents) {
-        // صف الجدول
         const row = document.createElement("tr");
         row.className = "st" + agent.status;
         row.innerHTML = `
@@ -163,7 +169,6 @@
         `;
         tbl.appendChild(row);
 
-        // بطاقة الهاتف
         const card = document.createElement("div");
         card.className = "card st" + agent.status;
         card.innerHTML = `
