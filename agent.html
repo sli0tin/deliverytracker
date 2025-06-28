@@ -87,11 +87,11 @@
     <div id="agentName"></div>
     <h3>اختر حالتك</h3>
     <select id="st" onchange="updateStatus()">
-      <option value="0">جاهز وقريب</option>
-      <option value="1">جاهز وبعيد</option>
-      <option value="2">يوصل طلبات</option>
-      <option value="3">مشغول</option>
-      <option value="4">أنا في المخبز</option> <!-- الحالة الجديدة -->
+      <option value="0">أنا في المخبز</option>
+      <option value="1">أنا في الطريق للمخبز</option>
+      <option value="2">جاهز وقريب</option>
+      <option value="3">جاهز وبعيد</option>
+      <option value="4">مشغول</option>
     </select>
   </div>
 
@@ -125,7 +125,7 @@
 
         const [id, val] = found;
         currentAgentId = id;
-        st.value = val.status || 3;
+        st.value = val.status !== undefined ? val.status : 4;
         agentName.textContent = `مرحبًا، ${val.name}`;
 
         loginArea.style.display = "none";
