@@ -24,7 +24,7 @@
       color: #333;
     }
 
-    /* ---------- لسطح المكتب ---------- */
+    /* -------- سطح المكتب -------- */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -52,12 +52,12 @@
       display: inline-block;
     }
 
-    .st0 { background: #c8f7c5; }
-    .st1 { background: #e0f7c8; }
-    .st2 { background: #ffe0b2; }
-    .st3 { background: #f7c5c5; }
+    .st0 { background-color: #c8f7c5 !important; }
+    .st1 { background-color: #e0f7c8 !important; }
+    .st2 { background-color: #ffe0b2 !important; }
+    .st3 { background-color: #f7c5c5 !important; }
 
-    /* ---------- للجوال ---------- */
+    /* -------- الجوال -------- */
     .card {
       display: none;
     }
@@ -69,22 +69,21 @@
 
       .card {
         display: block;
-        background: white;
         margin: 10px 0;
         padding: 15px;
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        color: #333;
       }
 
       .card .field {
         margin: 8px 0;
         font-size: 16px;
-        color: #333;
       }
 
       .card .label {
         font-weight: bold;
-        color: #666;
+        color: #555;
       }
 
       .card .whatsapp-link {
@@ -107,9 +106,9 @@
 <body>
 
   <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" />
-  <h2>لوحة تحكم الكاشير</h2>
+  <h2>قائمة المناديب الجاهزة للتوصيل:</h2>
 
-  <!-- جدول لسطح المكتب -->
+  <!-- جدول للكمبيوتر -->
   <table>
     <thead>
       <tr>
@@ -152,7 +151,7 @@
       agents.sort((a, b) => a.status - b.status);
 
       for (const agent of agents) {
-        // جدول لسطح المكتب
+        // صف الجدول
         const row = document.createElement("tr");
         row.className = "st" + agent.status;
         row.innerHTML = `
@@ -163,7 +162,7 @@
         `;
         tbl.appendChild(row);
 
-        // بطاقة للجوال
+        // بطاقة الهاتف
         const card = document.createElement("div");
         card.className = "card st" + agent.status;
         card.innerHTML = `
