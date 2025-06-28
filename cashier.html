@@ -24,6 +24,7 @@
       color: #333;
     }
 
+    /* ---------- لسطح المكتب ---------- */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -51,43 +52,50 @@
       display: inline-block;
     }
 
-    /* ألوان حسب الحالة */
-    .st0 { background: #c8f7c5; }   /* جاهز وقريب */
-    .st1 { background: #e0f7c8; }   /* جاهز وبعيد */
-    .st2 { background: #ffe0b2; }   /* يوصل */
-    .st3 { background: #f7c5c5; }   /* مشغول */
+    .st0 { background: #c8f7c5; }
+    .st1 { background: #e0f7c8; }
+    .st2 { background: #ffe0b2; }
+    .st3 { background: #f7c5c5; }
 
-    /* للعرض في الشاشات الصغيرة */
-    @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
+    /* ---------- للجوال ---------- */
+    .card {
+      display: none;
+    }
 
-      thead {
+    @media (max-width: 768px) {
+      table {
         display: none;
       }
 
-      tr {
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 10px;
+      .card {
+        display: block;
         background: white;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
 
-      td {
-        text-align: right;
-        padding: 8px 10px;
-        border: none;
-        position: relative;
+      .card .field {
+        margin: 8px 0;
+        font-size: 16px;
+        color: #333;
       }
 
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        right: 10px;
+      .card .label {
         font-weight: bold;
-        color: #555;
+        color: #666;
+      }
+
+      .card .whatsapp-link {
+        margin-top: 10px;
+        display: inline-block;
+        background: #25D366;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 15px;
       }
     }
   </style>
@@ -101,6 +109,7 @@
   <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" />
   <h2>لوحة تحكم الكاشير</h2>
 
+  <!-- جدول لسطح المكتب -->
   <table>
     <thead>
       <tr>
@@ -112,6 +121,9 @@
     </thead>
     <tbody id="tbl"></tbody>
   </table>
+
+  <!-- بطاقات للجوال -->
+  <div id="cards"></div>
 
   <script>
     const firebaseConfig = {
@@ -128,27 +140,39 @@
     const db = firebase.database().ref("agents");
 
     const statuses = ["جاهز وقريب", "جاهز وبعيد", "يوصل طلبات", "مشغول"];
+    const tbl = document.getElementById("tbl");
+    const cards = document.getElementById("cards");
 
     db.on("value", snap => {
       const data = snap.val() || {};
-      const tbl = document.getElementById("tbl");
       tbl.innerHTML = "";
+      cards.innerHTML = "";
 
       const agents = Object.entries(data).map(([id, a]) => ({ id, ...a }));
       agents.sort((a, b) => a.status - b.status);
 
       for (const agent of agents) {
+        // جدول لسطح المكتب
         const row = document.createElement("tr");
         row.className = "st" + agent.status;
         row.innerHTML = `
-          <td data-label="الاسم">${agent.name}</td>
-          <td data-label="رقم الهاتف">${agent.phone}</td>
-          <td data-label="الحالة">${statuses[agent.status]}</td>
-          <td data-label="واتساب">
-            <a class="whatsapp-link" href="https://wa.me/965${agent.phone}" target="_blank" rel="noopener noreferrer">💬 واتساب</a>
-          </td>
+          <td>${agent.name}</td>
+          <td>${agent.phone}</td>
+          <td>${statuses[agent.status]}</td>
+          <td><a class="whatsapp-link" href="https://wa.me/965${agent.phone}" target="_blank">💬 واتساب</a></td>
         `;
         tbl.appendChild(row);
+
+        // بطاقة للجوال
+        const card = document.createElement("div");
+        card.className = "card st" + agent.status;
+        card.innerHTML = `
+          <div class="field"><span class="label">الاسم: </span>${agent.name}</div>
+          <div class="field"><span class="label">الهاتف: </span>${agent.phone}</div>
+          <div class="field"><span class="label">الحالة: </span>${statuses[agent.status]}</div>
+          <a class="whatsapp-link" href="https://wa.me/965${agent.phone}" target="_blank">💬 واتساب</a>
+        `;
+        cards.appendChild(card);
       }
     });
   </script>
