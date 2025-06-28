@@ -65,13 +65,17 @@
 
     db.on("value", snap => {
       const data = snap.val() || {};
+      console.log("بيانات agents من Firebase:", data); // هذه السطر يساعد في التحقق من استقبال البيانات
+
       const tbl = document.getElementById("tbl");
       tbl.innerHTML = "";
 
       const agents = Object.entries(data).map(([id, a]) => ({ id, ...a }));
-      agents.sort((a, b) => a.status - b.status); // ترتيب حسب الحالة
+      agents.sort((a, b) => a.status - b.status);
 
       for (const agent of agents) {
+        console.log("عرض مندوب:", agent); // طباعة كل مندوب أثناء العرض
+
         const row = document.createElement("tr");
         row.className = "st" + agent.status;
         row.innerHTML = `
