@@ -96,6 +96,14 @@
   </div>
 
   <script>
+    // المتغيرات للعناصر في الصفحة
+    const user = document.getElementById("user");
+    const st = document.getElementById("st");
+    const agentName = document.getElementById("agentName");
+    const loginArea = document.getElementById("loginArea");
+    const statusArea = document.getElementById("statusArea");
+
+    // إعداد Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDAqHm_g9FO0uDIlj6P_k5KZ-mgDUGHXGc",
       authDomain: "deliverytracker-18897.firebaseapp.com",
@@ -114,6 +122,11 @@
     function login() {
       const u = user.value.trim();
 
+      if (u === "") {
+        alert("يرجى إدخال رقم اليوزر");
+        return;
+      }
+
       db.once("value").then(snap => {
         const data = snap.val() || {};
         const found = Object.entries(data).find(([id, val]) => val.username === u);
@@ -125,7 +138,10 @@
 
         const [id, val] = found;
         currentAgentId = id;
-        st.value = val.status !== undefined ? val.status : 4;
+
+        // إذا الحالة غير معرفة، نعطيها القيمة الافتراضية 4 (مشغول)
+        st.value = (val.status !== undefined && val.status !== null) ? val.status : 4;
+
         agentName.textContent = `مرحبًا، ${val.name}`;
 
         loginArea.style.display = "none";
@@ -135,8 +151,15 @@
 
     function updateStatus() {
       const newStatus = +st.value;
-      if (currentAgentId) {
-        db.child(currentAgentId).update({ status: newStatus });
+      if (currentAgentId !== null) {
+        db.child(currentAgentId).update({ status: newStatus })
+          .then(() => {
+            // تحديث تم بنجاح، يمكن إضافة أي رد فعل هنا إن أحببت
+            console.log("تم تحديث الحالة إلى:", newStatus);
+          })
+          .catch((error) => {
+            alert("حدث خطأ أثناء تحديث الحالة: " + error.message);
+          });
       }
     }
   </script>
