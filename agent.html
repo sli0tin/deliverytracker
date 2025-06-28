@@ -5,7 +5,6 @@
   <title>تحديث حالة المندوب</title>
   <style>
     body { font-family: Arial; padding: 30px; text-align: center; background: #f9f9f9; }
-    img { max-width: 200px; margin-bottom: 20px; }
     input, select {
       font-size: 18px;
       padding: 10px;
@@ -13,14 +12,21 @@
       width: 250px;
     }
     #statusArea { display: none; margin-top: 30px; }
+    #agentName { font-size: 20px; margin-bottom: 20px; color: #333; }
+    #logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
   </style>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة" style="max-width: 200px; margin-bottom: 20px;" />
+  <img id="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPq5DerGJ69vMcY651RSYZDRw7YaxzEAVG-A&s" alt="شعار الشركة">
+
   <h2>تسجيل دخول المندوب</h2>
 
   <div id="loginArea">
@@ -30,8 +36,8 @@
   </div>
 
   <div id="statusArea">
-    <h3 id="agentName"></h3>
-    <p>اختر حالتك</p>
+    <div id="agentName"></div>
+    <h3>اختر حالتك</h3>
     <select id="st" onchange="updateStatus()">
       <option value="0">جاهز وقريب</option>
       <option value="1">جاهز وبعيد</option>
@@ -61,9 +67,7 @@
 
       db.once("value").then(snap => {
         const data = snap.val() || {};
-        const found = Object.entries(data).find(([id, val]) =>
-          val.username === u
-        );
+        const found = Object.entries(data).find(([id, val]) => val.username === u);
 
         if (!found) {
           alert("رقم اليوزر غير صحيح");
@@ -73,8 +77,7 @@
         const [id, val] = found;
         currentAgentId = id;
         st.value = val.status || 3;
-
-        agentName.innerText = "مرحبًا، " + val.name;
+        agentName.textContent = `مرحبًا، ${val.name}`;
 
         loginArea.style.display = "none";
         statusArea.style.display = "block";
